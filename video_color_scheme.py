@@ -35,8 +35,8 @@ class VideoColorScheme:
             os.makedirs(self.temp_folder)  # create tmp directory if not exists
 
         # compose paths to store temp files
-        self.images_path = os.path.join(self.temp_folder, f"{self.filename}_images.npy")
-        self.colors_path = os.path.join(self.temp_folder, f"{self.filename}_colors.npy")
+        self.images_path = os.path.join(self.temp_folder, f"{self.filename}_images.pkl")
+        self.colors_path = os.path.join(self.temp_folder, f"{self.filename}_colors.pkl")
 
     @staticmethod
     def __read_video(video_path):
@@ -55,11 +55,12 @@ class VideoColorScheme:
         print(f"\nVideo file {video_path} was successfully read\n")
         return video
 
-    def video_to_images(self, step):
+    def video_to_images(self, start, step):
         """
         Convert video to the list of images. Get video frame each 'step' seconds.
         Save the list of images into 'self.images_path' file.
 
+        :param start: (float) time to start in seconds
         :param step: (float) step in seconds
         :return (str) path to saved array of images
         """
@@ -68,13 +69,13 @@ class VideoColorScheme:
         video_duration = int(self.video.duration)  # in seconds
 
         print("Start converting video to images...")
-        for t in tqdm(np.arange(0, video_duration, step)):
-            image = self.video.get_frame(t)  # get current video frame
-            self.images.append(image)  # add it into list
+        self.images = list(map(self.video.get_frame, tqdm([t for t in np.arange(start, video_duration, step)])))
+        # # the same as
+        # for t in tqdm(np.arange(start, video_duration, step)):
+        #     image = self.video.get_frame(t)  # get current video frame
+        #     self.images.append(image)  # add it into list
 
-        # save images array to disk
-        save(self.images, self.images_path)
-
+        save(self.images, self.images_path)  # save images array to disk
         print(f"Video file {self.video_path} was successfully converted to an image array")
         print(f"Images saved into {self.images_path} file\n")
 
@@ -98,18 +99,21 @@ class VideoColorScheme:
         print("Start extracting the most popular color from images")
         print(f"Images: {images_path}, number of colors: {number_of_colors}, compress to: {compress_to}")
 
-        # read images file
-        self.images = load(images_path)
+        self.images = load(images_path)  # read images file
         print(f"Images from {images_path} were successfully read")
 
-        self.colors = []
-        for image in tqdm(self.images):
-            image_colors = self.image_to_colors(image, number_of_colors, compress_to)
-            self.colors.append(image_colors)
+        print("Start analysing images colors...")
+        self.colors = list(map(self.image_to_colors,
+                               tqdm([image for image in self.images]),
+                               [number_of_colors for _ in range(len(self.images))],
+                               [compress_to for _ in range(len(self.images))]))
+        # # the same as
+        # self.colors = []
+        # for image in tqdm(self.images):
+        #     image_colors = self.image_to_colors(image, number_of_colors, compress_to)
+        #     self.colors.append(image_colors)
 
-        # save colors array to disk
-        save(self.colors, self.colors_path)
-
+        save(self.colors, self.colors_path)  # save colors array to disk
         print(f"Images {images_path} were successfully converted to a colors array")
         print(f"Colors saved into {self.colors_path} file")
 
@@ -155,12 +159,13 @@ class VideoColorScheme:
 
     def choose_colors(self, colors_path=None, mode='sample'):
         """
+        Choose a list of color based on color analysis
 
         :param colors_path: (str) path to saved numpy array of colors produced by 'images_to_colors()' function.
             If None, use the value stored in the current object.
         :param mode: (str) mode to choose a color.
             If 'popular' - return the most popular color, else sample a color according to distribution
-        :return:
+        :return: result_colors: (list of str) colors that will be used in the result image
         """
 
         if colors_path is None:
@@ -174,12 +179,15 @@ class VideoColorScheme:
         print(f"Colors from {colors_path} were successfully read")
 
         print("Choosing colors for the result image...")
-        result_colors = []  # colors that will be used in the result image
-        for color_tuple in tqdm(self.colors):
-            result_color = self.__choose_color(color_tuple, mode)
-            result_colors.append(result_color)
+        result_colors = list(map(self.__choose_color,
+                                 tqdm([color_tuple for color_tuple in self.colors]),
+                                 [mode for _ in range(len(self.colors))]))
+        # # the same as
+        # result_colors = []
+        # for color_tuple in tqdm(self.colors):
+        #     result_color = self.__choose_color(color_tuple, mode)
+        #     result_colors.append(result_color)
         print("Colors were successfully chosen")
-
         return result_colors
 
     @staticmethod
