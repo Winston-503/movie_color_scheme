@@ -5,11 +5,10 @@ from collections import Counter
 import cv2
 import moviepy.editor as mp
 import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.patches import Rectangle
 from sklearn.cluster import KMeans
 from tqdm import tqdm
-
-
-# from matplotlib import pyplot as plt
 
 
 class VideoColorScheme:
@@ -187,6 +186,7 @@ class VideoColorScheme:
         # for color_tuple in tqdm(self.colors):
         #     result_color = self.__choose_color(color_tuple, mode)
         #     result_colors.append(result_color)
+
         print("Colors were successfully chosen")
         return result_colors
 
@@ -207,20 +207,36 @@ class VideoColorScheme:
             colors, prob = zip(*color_tuple)
             return np.random.choice(colors, p=prob)
 
-    def compose_result_image(self, result_colors, height, weight):
+    def compose_result_image(self, result_colors, width, height):
         """
-        Create the result image from an array of colors
+        Create the result image from an array of colors and save it into 'self.result_path'
 
         :param result_colors: (list of str) list of the HEX colors to create an image
-        :param height: (int) height of the result image, ?
-        :param weight: (int) weight of the result image, ?
+        :param height: (int) height of the result image, inch
+        :param width: (int) weight of the result image, inch
         """
 
-        print("\nStart composing the result image...")
-        for result_color in tqdm(result_colors):
-            pass
+        total_colors = len(result_colors)
+        rectangle_width = width / total_colors
 
-        # save the image
+        print("\nStart composing the result image...")
+        fig, ax = plt.subplots(figsize=(width, height))
+        # draw two invisible lines that define the size of the canvas
+        ax.plot([0, width], [height, height], linewidth=0)
+        ax.plot([0, width], [0, 0], linewidth=0)
+
+        for i, color in enumerate(result_colors):
+            # Rectangle parameters:
+            # - xy: The (x, y) coordinates for the anchor point of the rectangle
+            # - width: Rectangle width
+            # - height: Rectangle height
+            ax.add_patch(Rectangle((i * rectangle_width, 0),
+                                   rectangle_width, height, color=color))
+
+        plt.axis('off')
+        plt.margins(x=0, y=0)  # remove blank space around the plot
+        plt.savefig(self.result_path, dpi=300, bbox_inches='tight')
+        plt.show()
         print("The result images was successfully composed")
 
         if self.delete_after:
