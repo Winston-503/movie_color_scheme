@@ -87,7 +87,7 @@ class VideoColorScheme:
             If None, use the value stored in the current object.
         :param number_of_colors: (int) number of colors to cluster the image.
             Large values slow down the analysis
-        :param compress_to: (int) number of pixels to resize the image during preprocessing, usually 300-500.
+        :param compress_to: (int) number of pixels to resize the image during preprocessing, usually 200-500.
             Large values slow down the analysis, small values skew its results
         :return: (str) path to saved array of colors
         """
@@ -249,6 +249,9 @@ class VideoColorScheme:
         if self.delete_after:
             import shutil
             shutil.rmtree(self.temp_folder)
+            print(f"delete_after=True, so temporary files in '{self.temp_folder}' folder were successfully deleted")
+        else:
+            print(f"delete_after=False, so temporary files in '{self.temp_folder}' folder were not deleted ")
 
 
 def save(obj, filename):
