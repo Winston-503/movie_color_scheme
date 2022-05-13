@@ -1,3 +1,4 @@
+import functools
 import os
 import pickle
 from collections import Counter
@@ -66,7 +67,8 @@ class VideoColorScheme:
         video_duration = int(self.video.duration)  # in seconds
 
         print("Start converting video to images...")
-        self.images = list(map(self.video.get_frame, tqdm([t for t in np.arange(start, video_duration, step)])))
+        self.images = list(map(self.video.get_frame,
+                               tqdm([t for t in np.arange(start, video_duration, step)])))
         # # the same as
         # for t in tqdm(np.arange(start, video_duration, step)):
         #     image = self.video.get_frame(t)  # get current video frame
@@ -102,10 +104,10 @@ class VideoColorScheme:
         print(f"Images from {images_path} were successfully read")
 
         print("Start analysing images colors...")
-        self.colors = list(map(self.image_to_colors,
-                               tqdm([image for image in self.images]),
-                               [number_of_colors for _ in range(len(self.images))],
-                               [compress_to for _ in range(len(self.images))]))
+        self.colors = list(map(functools.partial(self.image_to_colors,
+                                                 number_of_colors=number_of_colors, compress_to=compress_to),
+                               tqdm([image for image in self.images])))
+
         # # the same as
         # self.colors = []
         # for image in tqdm(self.images):
@@ -182,9 +184,9 @@ class VideoColorScheme:
         print(f"Colors from {colors_path} were successfully read")
 
         print("Choosing colors for the result image...")
-        result_colors = list(map(self.__choose_color,
-                                 tqdm([color_tuple for color_tuple in self.colors]),
-                                 [mode for _ in range(len(self.colors))]))
+        result_colors = list(map(functools.partial(self.__choose_color, mode=mode),
+                                 tqdm([color_tuple for color_tuple in self.colors])))
+
         # # the same as
         # result_colors = []
         # for color_tuple in tqdm(self.colors):
@@ -213,7 +215,7 @@ class VideoColorScheme:
                 return colors  # single color - uni-color image
             return np.random.choice(colors, p=prob)
 
-    def compose_result_image(self, result_colors, width, height, result_path):
+    def compose_result_image(self, result_colors, width, height, result_path, verbose=False):
         """
         Create the result image from an array of colors and save it into 'result_path'
 
@@ -221,6 +223,7 @@ class VideoColorScheme:
         :param height: (int) height of the result image, inch
         :param width: (int) weight of the result image, inch
         :param result_path: (str) path to save the result image
+        :param verbose: (bool) if True, show the result image
         """
 
         total_colors = len(result_colors)
@@ -243,7 +246,8 @@ class VideoColorScheme:
         plt.axis('off')
         plt.margins(x=0, y=0)  # remove blank space around the plot
         plt.savefig(result_path, dpi=300, bbox_inches='tight')
-        plt.show()
+        if verbose:
+            plt.show()
         print("The result images was successfully composed")
 
         if self.delete_after:
