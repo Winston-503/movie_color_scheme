@@ -50,7 +50,7 @@ class VideoColorScheme:
             print("An error occurred while reading video file")
             print(f"Error: {e}")
 
-        print(f"\nVideo file {video_path} was successfully read\n")
+        print(f"\nVideo file '{video_path}' was successfully read\n")
         return video
 
     def video_to_images(self, start, step):
@@ -75,8 +75,8 @@ class VideoColorScheme:
         #     self.images.append(image)  # add it into list
 
         save(self.images, self.images_path)  # save images array to disk
-        print(f"Video file {self.video_path} was successfully converted to an image array")
-        print(f"Images saved into {self.images_path} file\n")
+        print(f"Video file '{self.video_path}' was successfully converted to an image array")
+        print(f"Images saved into '{self.images_path}' file\n")
 
         return self.images_path
 
@@ -98,10 +98,10 @@ class VideoColorScheme:
             images_path = self.images_path
 
         print("Start extracting the most popular color from images")
-        print(f"Images: {images_path}, number of colors: {number_of_colors}, compress to: {compress_to}")
+        print(f"Images: '{images_path}', number of colors: {number_of_colors}, compress to: {compress_to}")
 
         self.images = load(images_path)  # read images file
-        print(f"Images from {images_path} were successfully read")
+        print(f"Images from '{images_path}' were successfully read")
 
         print("Start analysing images colors...")
         self.colors = list(map(functools.partial(self.image_to_colors,
@@ -115,8 +115,8 @@ class VideoColorScheme:
         #     self.colors.append(image_colors)
 
         save(self.colors, self.colors_path)  # save colors array to disk
-        print(f"Images {images_path} were successfully converted to a colors array")
-        print(f"Colors saved into {self.colors_path} file")
+        print(f"Images '{images_path}' were successfully converted to a colors array")
+        print(f"Colors saved into '{self.colors_path}' file")
 
         return self.colors_path
 
@@ -177,11 +177,11 @@ class VideoColorScheme:
             colors_path = self.colors_path
 
         print("\nStart composing the result image")
-        print(f"Colors: {colors_path}, mode: {mode}")
+        print(f"Colors: '{colors_path}', mode: {mode}")
 
         # read colors file
         self.colors = load(colors_path)
-        print(f"Colors from {colors_path} were successfully read")
+        print(f"Colors from '{colors_path}' were successfully read")
 
         print("Choosing colors for the result image...")
         result_colors = list(map(functools.partial(self.__choose_color, mode=mode),
