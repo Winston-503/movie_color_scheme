@@ -4,7 +4,7 @@
 
 Creating an image that reflects the color scheme of any video using Python, [moviepy](https://zulko.github.io/moviepy/), [scikit-learn](https://scikit-learn.org/stable/) and [matplotlib](https://matplotlib.org/).
 
-![movie_color_scheme_preview](./article/img/movie_color_scheme_preview.jpg)
+![movie_color_scheme_preview](./img/movie_color_scheme_preview.jpg)
 
 ## Tutorial
 
