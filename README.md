@@ -1,6 +1,6 @@
 # What Does Your Favorite Movie Look Like? 
 
-Or how to convert any video into an image that reflects its color scheme.
+### How to convert any video into an image that reflects its color scheme.
 
 Creating an image that reflects the color scheme of any video using Python, [moviepy](https://zulko.github.io/moviepy/), [scikit-learn](https://scikit-learn.org/stable/) and [matplotlib](https://matplotlib.org/).
 
@@ -33,8 +33,8 @@ Now you can run the script using `python main.py <parameters>` command. For exam
 Required parameters:
 - `video_path`: Path to the video file to process;
 - `result_path`: Path to save the resulting image (including .png);
-- `width`: Width of the resulting image, inches;
-- `height`: Height of the resulting image, inches.
+- `width`: Width of the resulting image, inches. Default value: 25;
+- `height`: Height of the resulting image, inches. Default value: 5.
 
 Less important parameters:
 - `mode`: Mode to choose a color. If 'popular' - return the most popular color, else sample a color according to distribution. Default value: 'sample';
