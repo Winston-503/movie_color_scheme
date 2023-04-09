@@ -8,7 +8,7 @@ Creating an image that reflects the color scheme of any video using Python, [mov
 
 ## Tutorial
 
-You can read detailed tutorial on [Medium]().
+You can read detailed tutorial on [Towards Data Science](https://towardsdatascience.com/what-does-your-favorite-movie-look-like-8c7b4a13ee94).
 
 ## Project Structure
 
