@@ -1,4 +1,4 @@
-# What Does Your Favorite Movie Look Like? 
+# What Does Your Favorite Movie Look Like?
 
 ### How to convert any video into an image that reflects its color scheme.
 
